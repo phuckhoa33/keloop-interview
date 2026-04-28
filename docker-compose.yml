@@ -1,0 +1,29 @@
+# Local infrastructure for the monolithic Unified Service Scheduler (PostgreSQL + Redis).
+# Start: docker compose up -d
+# Then: ./mvnw spring-boot:run  (profile `local` defaults in application.yml)
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: interview-postgres
+    environment:
+      POSTGRES_DB: scheduler_db
+      POSTGRES_USER: scheduler_user
+      POSTGRES_PASSWORD: scheduler_pass
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scheduler_user -d scheduler_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: interview-redis
+    ports:
+      - "6379:6379"
+
+networks:
+  default:
+    name: interview-net
